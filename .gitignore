@@ -1,0 +1,11 @@
+build.sh
+config/
+data/
+Dockerfile.dev
+.env
+.shell-vars
+start-backup.sh
+tests/
+trigger-build.sh
+vars
+.volumes
