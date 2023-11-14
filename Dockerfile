@@ -35,6 +35,7 @@ RUN apt-get update && \
 RUN apt-get update && \
     rm -f /etc/apt/apt.conf.d/docker-clean && \
     apt-get install proxmox-ve || echo ok && \
+    apt-get install proxmox-backup-restore-image || echo ok && \
     PVE_PKG="pve-manager" && \
     PVE_VER="$(ls /var/cache/apt/archives/${PVE_PKG}_*.deb|awk -F_ '{print $2}')" && \
     PVE_DEB1="${PVE_PKG}_${PVE_VER}_amd64.deb" && \
@@ -64,7 +65,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* /tmp/* && \
     rm -f /etc/apt/sources.list.d/pve-enterprise.list
 
-#set passwd for root
+#set (temporary) password for root
 RUN echo "root:root"|chpasswd
 
 COPY entrypoint.sh /
