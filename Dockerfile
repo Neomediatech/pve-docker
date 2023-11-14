@@ -73,7 +73,8 @@ RUN sed -i '/imklog/s/^/#/' /etc/rsyslog.conf && \
     chmod +x /entrypoint.sh
 
 RUN systemctl disable pvestatd pvefw-logger corosync spiceproxy getty@tty1 postfix ssh.service pve-ha-lrm.service pve-ha-crm.service && \
-    systemctl disable pve-firewall.service pvescheduler.service spiceproxy.service || echo ok
+    systemctl disable pve-firewall.service pvescheduler.service spiceproxy.service || echo ok && \
+    systemctl enable rsyslog
 
 #use setup.sh to start proxmox service
 STOPSIGNAL SIGINT
