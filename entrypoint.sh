@@ -54,6 +54,15 @@ docker_verify_minimum_env
 
 docker_setup_pve
 
+if [ ! -d /var/log/pveproxy ]; then
+    mkdir -p /var/log/pveproxy
+    chmod 777 /var/log/pveproxy
+fi
+
+if [ -n "$ENABLE_PVE_FIREWALL" -a "$ENABLE_PVE_FIREWALL" == "no" ]; then
+    systemctl mask pve-firewall.service
+fi
+
 echo "Running PVE..."
 exec "$@"
 #exec gosu backup /usr/lib/x86_64-linux-gnu/proxmox-backup/proxmox-backup-proxy "$@"

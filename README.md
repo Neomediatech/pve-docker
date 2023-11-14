@@ -25,6 +25,7 @@ or
 | ADMIN_PASSWORD      | Password to access PVE web interface (mandatory)                | (none)          |
 | RELAY_HOST          | Hostname to use to relay email from Postfix (NOT WORKING!)      |                 |
 | PVE_ENTERPRISE      | If set to "yes", enterprise repository will be retained         | no              |
+| ENABLE_PVE_FIREWALL | If set to "no", PVE firewall service will be disabled           | yes             |
 
 Set vars in `run.sh` script and/or set them in `.envs` file.  
 Example `.envs` file:
