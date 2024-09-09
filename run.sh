@@ -19,7 +19,7 @@ if [ -f $BASE_PATH/.shell-vars ]; then
 fi
 
 if [ -f $BASE_PATH/.volumes ]; then
-    for VOLUME in $(cat $BASE_PATH/.volumes); do
+    for VOLUME in $(cat $BASE_PATH/.volumes|egrep -v "^#"); do
         VOLUMES="$VOLUMES -v $(eval "echo $VOLUME")"
     done
 fi
