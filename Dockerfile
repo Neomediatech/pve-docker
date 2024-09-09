@@ -1,6 +1,6 @@
 FROM debian:bookworm
 
-ENV PVE_VERSION=8.0.4 \
+ENV PVE_VERSION=8.2-2 \
     SERVICE=pve-docker \
     DEBIAN_FRONTEND=noninteractive
 
@@ -15,18 +15,18 @@ RUN echo 'APT::Get::Assume-Yes "1";' > /etc/apt/apt.conf.d/00-custom && \
     echo 'APT::Install-Recommends "0";' >> /etc/apt/apt.conf.d/00-custom && \
     echo 'APT::Install-Suggests "0";' >> /etc/apt/apt.conf.d/00-custom
 
-RUN apt-get update && \
-    apt-get dist-upgrade
-
 # install base pkg
-RUN apt-get install wget systemctl nano vim curl gnupg ca-certificates rsyslog net-tools iputils-ping
+RUN apt-get update && \
+    apt-get dist-upgrade && \
+    apt-get install wget systemctl nano vim curl gnupg ca-certificates rsyslog net-tools iputils-ping tini && \
+    rm -rf /var/lib/apt/lists/* /tmp/*
 
 # add PVE repository
 RUN wget https://enterprise.proxmox.com/debian/proxmox-release-bookworm.gpg -O /etc/apt/trusted.gpg.d/proxmox-release-bookworm.gpg && \
     echo "deb http://download.proxmox.com/debian/pve bookworm pve-no-subscription" > /etc/apt/sources.list.d/pve-free.list
 
 RUN apt-get update && \
-    apt-get install initramfs-tools && \
+    apt-get install initramfs-tools zfsutils-linux && \
     rm -rf /var/lib/apt/lists/* /tmp/* && \
     echo '#!/bin/bash' > /usr/sbin/update-initramfs && \
     echo 'exit 0' >> /usr/sbin/update-initramfs && \
@@ -81,11 +81,38 @@ RUN echo "root:root"|chpasswd
 COPY entrypoint.sh /
 
 RUN sed -i '/imklog/s/^/#/' /etc/rsyslog.conf && \
+    echo '*.* -/proc/1/fd/1' >> /etc/rsyslog.conf && \
     chmod +x /entrypoint.sh
 
-RUN systemctl disable pvestatd pvefw-logger corosync spiceproxy getty@tty1 postfix ssh.service pve-ha-lrm.service pve-ha-crm.service && \
+# Enabling rc.local to allow to execute installation of "ifupdown2" package after "init" is started.
+# very bad and silly method! But didn't find other way.
+# Networking must be restarted two times and "two times" ifupdown2 will be installed (very very bad! But it works)
+RUN echo "[Unit] \n \
+ Description=/etc/rc.local Compatibility \n \
+ ConditionPathExists=/etc/rc.local \n \
+[Service] \n \
+ Type=forking \n \
+ ExecStart=/etc/rc.local start \n \
+ TimeoutSec=0 \n \
+ StandardOutput=tty \n \
+ RemainAfterExit=yes \n \
+ \n \
+[Install] \n \
+ WantedBy=multi-user.target" > /etc/systemd/system/rc-local.service && \
+    printf '%s\n' '#!/bin/bash' > /etc/rc.local && \
+    echo "systemctl restart networking" >> /etc/rc.local && \
+    echo "apt-get update" >> /etc/rc.local && \
+    echo "apt-get install -y --no-install-recommends --no-install-suggests ifupdown2" >> /etc/rc.local && \
+    echo "systemctl restart networking" >> /etc/rc.local && \
+    echo "apt-get install -y --no-install-recommends --no-install-suggests ifupdown2" >> /etc/rc.local && \
+    echo "exit 0"  >> /etc/rc.local && \
+    chmod +x /etc/rc.local && \
+    mkdir -p /var/lib/dhcp && \
+    rm -rf /var/lib/apt/lists/* /tmp/* 
+
+RUN systemctl disable pvestatd pvefw-logger corosync spiceproxy getty@tty1 ssh.service pve-ha-lrm.service pve-ha-crm.service && \
     systemctl disable pve-firewall.service pvescheduler.service spiceproxy.service || echo ok && \
-    systemctl enable rsyslog
+    systemctl enable rsyslog rc-local
 
 #use setup.sh to start proxmox service
 STOPSIGNAL SIGINT

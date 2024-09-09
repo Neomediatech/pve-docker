@@ -5,7 +5,7 @@
 Proxmox Virtual Environment on a Docker container  
 
 ## Known limits
-* **Postfix is not working**
+* ~~Postfix is not working~~
 * (and maybe many other things)  
 
 ## How to run
@@ -13,7 +13,7 @@ Proxmox Virtual Environment on a Docker container
 What does [run.sh](run.sh) do:
 * set docker ENV vars if they are set in the script or in the `.envs` file
 * set shell script vars if they are set in the script or in the `.shell-vars` file (see [example](#environment-variables))
-* check if datastore exists; if not, it exit prior tu run the container (maybe in future i'll make it more smart, see [To DO](#to-do) section)
+* check if datastore exists; if not, it exits prior to run the container (maybe in future i'll make it more smart, see [To DO](#to-do) section)
 * run the container
   
 or  
@@ -23,7 +23,7 @@ or
 | Name                | Description                                                     | Default         |
 | ------------------- | --------------------------------------------------------------- | --------------- |
 | ADMIN_PASSWORD      | Password to access PVE web interface (mandatory)                | (none)          |
-| RELAY_HOST          | Hostname to use to relay email from Postfix (NOT WORKING!)      |                 |
+| RELAY_HOST          | Hostname to use to relay email from Postfix                     |                 |
 | PVE_ENTERPRISE      | If set to "yes", enterprise repository will be retained         | no              |
 | ENABLE_PVE_FIREWALL | If set to "no", PVE firewall service will be disabled           | yes             |
 
@@ -57,5 +57,5 @@ ${BASE_PATH}/data/bin:/srv/bin
 ```  
   
 ## To DO
-- [ ] Make Postfix working, to send emails
+- [x] Make Postfix working, to send emails
 
