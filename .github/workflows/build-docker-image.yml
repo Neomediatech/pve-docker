@@ -9,7 +9,7 @@ on:
 jobs:
   build-and-scan:
     secrets: inherit
-    uses: Neomediatech/docker-images-scan-reports/.github/workflows/build-and-scan-docker-image.yml@main
+    uses: Neomediatech/gh-workflows/.github/workflows/build-and-scan-docker-image.yml@main
     with:
       dockerfile: "Dockerfile"
       dockerdir: "."
@@ -18,7 +18,7 @@ jobs:
   push-report-to-repo:
     needs: [build-and-scan]
     secrets: inherit
-    uses: Neomediatech/docker-images-scan-reports/.github/workflows/copy-file-to-another-repo.yml@main
+    uses: Neomediatech/gh-workflows/.github/workflows/copy-file-to-another-repo.yml@main
     with:
       file_id: ${{ needs.build-and-scan.outputs.uploaded-file-id }}
       filename: ${{ needs.build-and-scan.outputs.file_to_copy_output }}
