@@ -1,1 +1,2 @@
 ven 4 lug 2025, 20:25:05, CEST --- ghcr.io/neomediatech/pve:8.4 UPDATED
+ven 4 lug 2025, 20:25:43, CEST --- ghcr.io/neomediatech/pve:latest UPDATED
