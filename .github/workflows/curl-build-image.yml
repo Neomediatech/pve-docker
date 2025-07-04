@@ -11,7 +11,7 @@
 #    }
 #  }'
 
-name: Build Proxmox VE Docker Images via curl
+name: Build Docker Images via curl
 
 on:
   repository_dispatch: # Per inviare richieste di compilazione immagini via curl
@@ -25,7 +25,14 @@ permissions:
 jobs:
   build-image:
     uses: Neomediatech/gh-workflows/.github/workflows/build-docker-image.yml@main
-    secrets: inherit
     with:
       base-image: debian:bookworm
       package-name: neomediatech/pve
+      derived-image-prefix: ghcr.io/neomediatech/pve
+    secrets:
+      NOTIFY_CMD: ${{ secrets.NOTIFY_CMD }}
+      NOTIFY_UP: ${{ secrets.NOTIFY_UP }}
+      NOTIFY_ENDPOINT: ${{ secrets.NOTIFY_ENDPOINT }}
+      NOTIFY_OPTIONS: ${{ secrets.NOTIFY_OPTIONS }}
+      GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+      API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
