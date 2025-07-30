@@ -16,14 +16,8 @@ RUN echo 'APT::Get::Assume-Yes "1";' > /etc/apt/apt.conf.d/00-custom && \
     echo 'APT::Install-Recommends "0";' >> /etc/apt/apt.conf.d/00-custom && \
     echo 'APT::Install-Suggests "0";' >> /etc/apt/apt.conf.d/00-custom
 
-# Deny initramfs updates
-RUN mkdir -p /etc/initramfs-tools/conf.d && \
-    echo "update_initramfs=no" > /etc/initramfs-tools/conf.d/no-update-initramfs.conf && \
-    echo "backup_initramfs=no" >> /etc/initramfs-tools/conf.d/no-update-initramfs.conf
-
 # install base pkg
 RUN apt-get update && \
-    apt-get dist-upgrade && \
     apt-get install wget nano vim curl gnupg ca-certificates rsyslog net-tools iputils-ping tini \
                     sudo systemd systemd-sysv dbus dbus-user-session && \
     rm -rf /var/lib/apt/lists/* /tmp/*
@@ -35,6 +29,14 @@ RUN printf '#!/bin/sh\nexit 0' > /usr/sbin/policy-rc.d && \
 RUN wget https://enterprise.proxmox.com/debian/proxmox-release-bookworm.gpg -O /etc/apt/trusted.gpg.d/proxmox-release-bookworm.gpg && \
     echo "deb http://download.proxmox.com/debian/pve bookworm pve-no-subscription" > /etc/apt/sources.list.d/pve-free.list
 
+# Deny initramfs updates
+RUN apt-get update && \
+    apt-get install initramfs-tools && \
+    rm -rf /var/lib/apt/lists/* /tmp/* && \
+    echo '#!/bin/bash' > /usr/sbin/update-initramfs && \
+    echo 'exit 0' >> /usr/sbin/update-initramfs && \
+    chmod +x /usr/sbin/update-initramfs
+
 RUN apt-get update && \
     apt-get install \
             postfix open-iscsi chrony \
@@ -43,7 +45,7 @@ RUN apt-get update && \
             libpve-storage-perl=8.3.6 libproxmox-rs-perl=0.3.5 libpve-access-control=8.2.2 \
             libpve-cluster-api-perl=8.1.2 pve-container=5.3.0 pve-firewall=5.1.2 \
             pve-ha-manager=4.0.5 qemu-server=8.4.1 pve-docs=8.4.0 pve-manager=8.4.5 proxmox-default-kernel && \
-    rm -rf /var/lib/apt/lists/* /tmp/* && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /etc/apt/sources.list.d/pve-enterprise.list && \
     sed -i 's/^ConditionVirtualization=!container$/#ConditionVirtualization=!container/' /lib/systemd/system/lxcfs.service
 
 #set (temporary) password for root
