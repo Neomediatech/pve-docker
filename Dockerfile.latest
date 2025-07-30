@@ -1,11 +1,9 @@
 FROM debian:bookworm
 
-ENV PVE_VERSION=8.4-1 \
-    SERVICE=pve-docker \
+ENV SERVICE=pve-docker \
     DEBIAN_FRONTEND=noninteractive
 
 LABEL maintainer="docker-dario@neomediatech.it" \ 
-      org.label-schema.version=$PVE_VERSION \
       org.label-schema.vcs-type=Git \
       org.label-schema.vcs-url=https://github.com/Neomediatech/${SERVICE} \
       org.label-schema.maintainer=Neomediatech
@@ -14,6 +12,11 @@ LABEL maintainer="docker-dario@neomediatech.it" \
 RUN echo 'APT::Get::Assume-Yes "1";' > /etc/apt/apt.conf.d/00-custom && \
     echo 'APT::Install-Recommends "0";' >> /etc/apt/apt.conf.d/00-custom && \
     echo 'APT::Install-Suggests "0";' >> /etc/apt/apt.conf.d/00-custom
+
+# Deny initramfs updates
+RUN mkdir -p /etc/initramfs-tools/conf.d && \
+    echo "update_initramfs=no" > /etc/initramfs-tools/conf.d/no-update-initramfs.conf && \
+    echo "backup_initramfs=no" >> /etc/initramfs-tools/conf.d/no-update-initramfs.conf
 
 # install base pkg
 RUN apt-get update && \

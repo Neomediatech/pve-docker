@@ -56,8 +56,10 @@ docker_setup_pve
 
 if [ ! -d /var/log/pveproxy ]; then
     mkdir -p /var/log/pveproxy
-    chmod 777 /var/log/pveproxy
 fi
+chmod 777 /var/log/pveproxy
+touch /var/log/pveproxy/access.log
+chmod 666 /var/log/pveproxy/access.log
 
 if [ -n "$ENABLE_PVE_FIREWALL" -a "$ENABLE_PVE_FIREWALL" == "no" ]; then
     systemctl mask pve-firewall.service

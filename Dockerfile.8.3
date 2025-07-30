@@ -1,7 +1,7 @@
-ARG STICKY_VERSION=8.4
+ARG STICKY_VERSION=8.3
 FROM debian:bookworm
 
-ENV PVE_VERSION=8.4 \
+ENV PVE_VERSION=8.3 \
     SERVICE=pve-docker \
     DEBIAN_FRONTEND=noninteractive
 
@@ -38,11 +38,11 @@ RUN wget https://enterprise.proxmox.com/debian/proxmox-release-bookworm.gpg -O /
 RUN apt-get update && \
     apt-get install \
             postfix open-iscsi chrony \
-            proxmox-ve=8.4.0 libpve-http-server-perl=5.1.1 libpve-notify-perl=8.1.2 \
-            libpve-cluster-perl=8.1.2 libpve-guest-common-perl=5.2.2 libpve-rs-perl=0.9.4 \
-            libpve-storage-perl=8.3.6 libproxmox-rs-perl=0.3.5 libpve-access-control=8.2.2 \
-            libpve-cluster-api-perl=8.1.2 pve-container=5.3.0 pve-firewall=5.1.2 \
-            pve-ha-manager=4.0.5 qemu-server=8.4.1 pve-docs=8.4.0 pve-manager=8.4.5 proxmox-default-kernel && \
+            proxmox-ve=8.3.0 libpve-http-server-perl=5.1.1 libpve-notify-perl=8.1.0 \
+            libpve-cluster-perl=8.1.0 libpve-guest-common-perl=5.2.2 libpve-rs-perl=0.8.13 \
+            libpve-storage-perl=8.3.6 libproxmox-rs-perl=0.3.4 libpve-access-control=8.2.0 \
+            libpve-cluster-api-perl=8.1.0 pve-container=5.2.5 pve-firewall=5.1.2 \
+            pve-ha-manager=4.0.5 qemu-server=8.3.14 pve-docs=8.3.2 pve-manager=8.3.7 proxmox-default-kernel && \
     rm -rf /var/lib/apt/lists/* /tmp/* && \
     sed -i 's/^ConditionVirtualization=!container$/#ConditionVirtualization=!container/' /lib/systemd/system/lxcfs.service
 
