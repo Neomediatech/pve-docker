@@ -28,7 +28,7 @@ jobs:
       derived-image-prefix: ghcr.io/neomediatech/pve
       force-build: "${{ github.event.inputs.force-build }}"
       update-image: "true"
-      image-type: "pve"
+      image-type: "proxmox"
       package-to-check: "pve-manager"
     secrets:
       NOTIFY_CMD: ${{ secrets.NOTIFY_CMD }}
