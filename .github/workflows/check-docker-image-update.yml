@@ -1,0 +1,42 @@
+name: Check Docker images updates on cron
+
+on:
+  #schedule:
+    # Esegui ogni giorno alle 04:00 UTC per controllare gli aggiornamenti.
+    #- cron: '0 4 * * *'
+  workflow_dispatch:
+    inputs:
+      force-build:
+        description: 'Forza la generazione delle immagini?'
+        required: true
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+permissions:
+  contents: write
+  packages: write
+  actions: write
+
+jobs:
+  build-image:
+    uses: Neomediatech/gh-workflows/.github/workflows/build-docker-image-bulk.yml@main
+    with:
+      package-name: neomediatech/pve
+      derived-image-prefix: ghcr.io/neomediatech/pve
+      force-build: "${{ github.event.inputs.force-build }}"
+      update-image: "true"
+      image-type: "pve"
+      package-to-check: "pve-manager"
+    secrets:
+      NOTIFY_CMD: ${{ secrets.NOTIFY_CMD }}
+      NOTIFY_UP: ${{ secrets.NOTIFY_UP }}
+      NOTIFY_ENDPOINT: ${{ secrets.NOTIFY_ENDPOINT }}
+      NOTIFY_OPTIONS: ${{ secrets.NOTIFY_OPTIONS }}
+      GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+      API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
