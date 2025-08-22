@@ -1,12 +1,20 @@
 FROM debian:bookworm
 
-ENV SERVICE=pve-docker \
+ENV REPO=pve-docker \
     DEBIAN_FRONTEND=noninteractive
 
-LABEL maintainer="docker-dario@neomediatech.it" \ 
-      org.label-schema.vcs-type=Git \
-      org.label-schema.vcs-url=https://github.com/Neomediatech/${SERVICE} \
-      org.label-schema.maintainer=Neomediatech
+LABEL org.opencontainers.image.source=https://github.com/Neomediatech/${REPO} \
+      org.opencontainers.package.name=proxmox-backup-server
+
+ARG BIN_SOURCE=https://github.com/Neomediatech/assets/raw/refs/heads/main/bin
+ADD --chmod=777 ${BIN_SOURCE}/tini \
+                ${BIN_SOURCE}/http \
+                ${BIN_SOURCE}/curl \
+                ${BIN_SOURCE}/wget \
+                /usr/local/bin/
+
+ADD --chmod=777 ${BIN_SOURCE}/gosu \
+                /usr/local/bin/
 
 # set apt config
 RUN echo 'APT::Get::Assume-Yes "1";' > /etc/apt/apt.conf.d/00-custom && \
@@ -15,7 +23,7 @@ RUN echo 'APT::Get::Assume-Yes "1";' > /etc/apt/apt.conf.d/00-custom && \
 
 # install base pkg
 RUN apt-get update && \
-    apt-get install wget nano vim curl gnupg ca-certificates rsyslog net-tools iputils-ping tini \
+    apt-get install nano vim curl gnupg ca-certificates rsyslog net-tools iputils-ping \
                     sudo systemd systemd-sysv dbus dbus-user-session && \
     rm -rf /var/lib/apt/lists/* /tmp/*
 
